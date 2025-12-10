@@ -353,9 +353,6 @@ print(f"Input shape: {batch['input_ids'].shape}")
 print(f"Output shape: {output.shape}")
 print(f"Label shape: {batch['labels'].shape}")
 ```
-
----
-
 ## Model Architecture
 
 ### xLSTM Blocks
@@ -427,97 +424,8 @@ trainer.load_checkpoint("checkpoints/checkpoint_epoch_5.pt")
 trainer.train()
 ```
 
----
-
-## Troubleshooting
-
-### Common Issues
-
-**1. Shape Mismatch Errors**
-```python
-# Check your data shapes
-print(f"Input shape: {batch['input_ids'].shape}")
-print(f"Expected: [batch_size, seq_length, num_features]")
-```
-
-**2. NaN Loss**
-- Reduce learning rate
-- Check for data normalization
-- Increase `grad_clip` value
-
-**3. Out of Memory**
-- Reduce `batch_size`
-- Reduce `seq_length`
-- Reduce `embed_dim` or `num_blocks`
-
-**4. Slow Training**
-- Enable CUDA: Check `torch.cuda.is_available()`
-- Reduce `num_workers` in DataLoader if CPU-bound
-- Use mixed precision training (requires manual implementation)
-
----
-
-## Performance Tips
-
-### Memory Optimization
-```python
-# In Config:
-batch_size = 8          # Reduce if OOM
-embed_dim = 256         # Reduce model size
-num_blocks = 4          # Fewer blocks
-```
-
-### Speed Optimization
-```python
-# In DataLoader:
-num_workers = 4         # Parallel data loading
-pin_memory = True       # Faster GPU transfer
-prefetch_factor = 2     # Prefetch batches
-```
-
-### Gradient Accumulation (Effective Larger Batch)
-```python
-# In Trainer.train_epoch:
-accumulation_steps = 4
-
-for step, batch in enumerate(self.train_loader):
-    loss = self.train_step(batch) / accumulation_steps
-    
-    if (step + 1) % accumulation_steps == 0:
-        self.optimizer.step()
-        self.optimizer.zero_grad()
-```
-
----
-
-## Citation
-
-If you use this implementation, please cite the original xLSTM paper:
-```bibtex
-@article{beck2024xlstm,
-  title={xLSTM: Extended Long Short-Term Memory},
-  author={Beck, Maximilian and P{\"o}ppel, Korbinian and Spanring, Markus and Auer, Andreas and Prudnikova, Oleksandra and Kopp, Michael and Klambauer, G{\"u}nter and Brandstetter, Johannes and Hochreiter, Sepp},
-  journal={arXiv preprint arXiv:2405.04517},
-  year={2024}
-}
-```
-
----
-
 ## License
 
 MIT License - Feel free to use and modify for your projects.
 
-## Contributing
 
-Issues and pull requests welcome! This is designed to be a simple, educational implementation.
-
-## Support
-
-- Open an issue for bugs
-- Check WandB docs for tracking questions
-- See PyTorch docs for model debugging
-
----
-
-**Happy Training! 🚀**
